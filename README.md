@@ -16,6 +16,10 @@ The game pieces and SFX are forked from the [**Lichess open source Github repo**
  This program is still in development so if you see any bugs please report them :).
  Actually its not even close to finished
 
+ ### test branching
+
+ You can check the other branches and run them but they might have a lot of bugs cause they are in development
+
  ### Things that are in development
 
  1. Piece Notation
