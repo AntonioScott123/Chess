@@ -1,5 +1,7 @@
+# Made By Antonio Scott
+# Date Project Started 10/10/2024
+
 import pygame
-import textwrap
 
 pygame.init()
 pygame.mixer.init()
@@ -14,6 +16,7 @@ sqrDimension = scrnHeight // 8
 timer = pygame.time.Clock()
 whiteToMove = True
 promoted = False
+castle = False
 mover = "w"
 move = 0
 takes = ""
@@ -106,7 +109,7 @@ class Piece(pygame.sprite.Sprite):
 		return pieceCol, pieceRow
 
 	def ifLegalMove(self, prevX, prevY, curX, curY):
-		global bum, promoted
+		global bum, promoted, castle
 		bum +=1
 		selected_pieceColor = self.pieceType[0]
 		selected_pieceType = self.pieceType[1]
@@ -119,15 +122,6 @@ class Piece(pygame.sprite.Sprite):
 				return False
 			else:
 				return True
-		def customLogic1(cond1, cond2):
-			if cond1 == True and cond2 == False:
-				return False
-			elif cond1 == True and cond2 == True:
-				return True
-			elif cond1 == False and cond2 == True:
-				return True
-			elif cond1 == False and cond2 == False:
-				return False
 		def customLogicForPawn(cond1, cond2):
 			if cond1 == True and cond2 == False:
 				return False
@@ -223,6 +217,32 @@ class Piece(pygame.sprite.Sprite):
 			
 			return legalMove, takes
 
+		def castle(selected, direction):
+			print("MAYBE CASTLE")
+			global castle, castleType
+			color = selected.pieceType[0]
+			if color == "b":
+				y = 7
+			else:
+				y = 0
+			if direction == "r":
+				castleType = "O-O"
+				xChange = -2
+				xShouldEqual = 7
+			else:
+				castleType = "O-O-O"
+				xChange = 3
+				xShouldEqual = 0
+			for piece in all_pieces:
+				castle = False
+				if piece.pieceType == color + "R":
+					if xShouldEqual == piece.get_column_and_row()[0] and piece.first_move:
+						piece.rect.topleft = piece.coordinate_to_pixel(xShouldEqual + xChange, y)
+						castle = True
+						break
+
+
+
 		if selected_pieceType == "P":
 			if selected_pieceColor == "w":
 				pWay = 1
@@ -274,14 +294,41 @@ class Piece(pygame.sprite.Sprite):
 		elif selected_pieceType == "N":
 			if abs(curX-prevX) == 2 and abs(curY-prevY) == 1:
 				returned = squareCheck(self, True, True)
-			if abs(curY-prevY) == 2 and abs(curX-prevX) == 1:
+			elif abs(curY-prevY) == 2 and abs(curX-prevX) == 1:
 				returned = squareCheck(self, True, True)
+			else:
+				returned = False, False
 		elif selected_pieceType == "K":
 			if abs(curX-prevX) < 2 and abs(curY-prevY) < 2:
 				returned = squareCheck(self, False, True)
+			elif (self.first_move and curX-prevX == 2) and curY == prevY:
+				print("HI")
+				if squareCheck(self, False, False)[0]:
+					castle(self, "r")
+					if castle:
+						returned = True, False
+					else:
+						returned = False, False
+				else:
+					returned = False, False
+			elif (self.first_move and curX-prevX == -2) and curY == prevY:
+				if squareCheck(self, False, False)[0]:
+					print("HI")
+					castle(self, "l")
+					if castle:
+						returned = True, False
+					else:
+						returned = False, False
+				else:
+					returned = False, False
+			else:
+				returned = False, False
 
 		if selected_pieceType != "P":
 			promoted = False
+		if selected_pieceType != "K":
+			castle = False
+		print(castle)
 
 		return returned
 
@@ -308,7 +355,7 @@ def drawWhiteBlack():
 		scrn.blit(notation.render("Black To Move", True, (255, 255, 255)), (860, 30))
 
 def update_notation(piece, x, prevX, prevY):
-	global fullNotation, fullNotationStr, whiteToMove, move, promoted
+	global fullNotation, fullNotationStr, whiteToMove, move, promoted, castle
 	pawnPrevCol = ""
 	if promoted:
 		promote = "=Q"
@@ -318,6 +365,8 @@ def update_notation(piece, x, prevX, prevY):
 		if x != "":
 			pawnPrevCol = abc_to_num[prevX]
 		fullNotation.append(pawnPrevCol + x + list(numtoabc.keys())[column] + str(row + 1) + promote)
+	elif castle:
+		fullNotation.append(castleType)
 	else:
 		fullNotation.append(piece.pieceType[1] + x + list(numtoabc.keys())[column] + str(row + 1) + promote)
 
@@ -449,7 +498,6 @@ oldTakes = False
 
 
 setup_pieces()
-
 
 run = True
 while run:
