@@ -7,7 +7,7 @@ The game pieces and SFX are forked from the [**Lichess open source Github repo**
 
 1. Click the link to repl and run there
 2. there is another repl with the latest non-stable realease its this link
-3. [Non-Stable Release]([(https://replit.com/@Antonio987654/chess])
+3. [Non-Stable Release]((https://replit.com/@Antonio987654/chess)
 
  ### **Warning** 
  
