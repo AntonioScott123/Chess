@@ -6,8 +6,8 @@ The game pieces and SFX are forked from the [**Lichess open source Github repo**
 ### Steps to run this program
 
 1. Click the link to repl and run there
-
-[Python Download](https://www.python.org/downloads/)
+2. there is another repl with the latest non-stable realease its this link
+3. [Non-Stable Release]([https://www.python.org/downloads/](https://replit.com/@Antonio987654/chess))
 
  ### **Warning** 
  
